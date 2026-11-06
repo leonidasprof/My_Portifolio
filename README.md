@@ -61,14 +61,23 @@ As cores ficam em variáveis CSS no `:root`. Para alterar uma cor, mude a variá
 
 | Variável | Cor | Uso |
 |---|---|---|
-| `--bg-base` | `#11012e` | Fundo principal e texto sobre o rosa |
+| `--accent-yellow` | `#ffcc00` | Fundo da página (`--page-bg`) e destaques sobre superfícies escuras |
+| `--bg-base` | `#11012e` | Fundo da splash e texto sobre o rosa |
 | `--surface` | `#2a0c62` | Cards, containers e sombras do duotone |
 | `--accent-pink` | `#ff018f` | Chamadas para ação, bordas ativas e detalhes neon |
-| `--accent-yellow` | `#ffcc00` | Badges, textos de destaque e hovers secundários |
-| `--text-main` | `#ffffff` | Texto principal |
-| `--text-muted` | `#b8b0d8` | Texto secundário |
+| `--text-main` | muda com o contexto | Texto principal |
+| `--text-muted` | muda com o contexto | Texto secundário |
 
-Alguns valores derivam dessas cores, como `--line-color`, `--glow-pink` e `--glow-yellow`. Os contornos dos avatares (`--sticker-*`) e os filtros SVG repetem os valores das cores, portanto precisam ser atualizados à mão se a paleta mudar.
+O texto muda de cor conforme o fundo, porque `--text-main`, `--text-muted`, `--line-color` e `--highlight` são redefinidas por contexto:
+
+| Contexto | Onde se aplica | `--text-main` | `--text-muted` | `--highlight` |
+|---|---|---|---|---|
+| **Página** | `body` | `#11012e` | `#2a0c62` | `#2a0c62` |
+| **Superfície escura** | Splash, lightbox, cards de projetos, contatos, Memories e pills | `#ffffff` | `#b8b0d8` | `#ffcc00` |
+
+Para deixar um novo elemento escuro com texto claro, adicione o seletor dele ao bloco "Contexto das superfícies escuras", logo após o `:root`.
+
+Alguns valores derivam das cores da paleta, como `--glow-pink` e `--glow-yellow`. Os contornos dos avatares (`--sticker-*`) e os filtros SVG repetem os valores das cores, portanto precisam ser atualizados à mão se a paleta mudar.
 
 **Tipografia:** Fredoka nos títulos e Outfit no corpo do texto, ambas do Google Fonts. Os ícones são do Font Awesome 6.4 Free.
 
