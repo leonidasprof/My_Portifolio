@@ -14,7 +14,7 @@ Todo o site fica em um único arquivo, o `index.html`, feito com HTML, CSS e Jav
 | **About** (`#about`) | Apresentação pessoal e foto |
 | **Trajetória** (`#experiencia`) | Contatos, QR Code do currículo, mural Memories, experiência profissional e hard skills |
 | **Projects** (`#cases`) | Cards dos projetos, com links para o produto e para o GitHub |
-| **Certifications** | Grade de certificados, ampliáveis ao clicar |
+| **Certifications** | Mosaico de certificados, ampliáveis ao clicar |
 | **Rodapé** | Redes sociais e direitos autorais |
 
 ## Como executar
@@ -27,7 +27,7 @@ python -m http.server 8765
 
 Depois, acesse `http://localhost:8765`. É preciso estar conectado à internet, porque fontes, ícones e imagens são carregados de servidores externos.
 
-Para publicar, envie o `index.html` para qualquer hospedagem de arquivos estáticos, como Vercel, Netlify ou GitHub Pages. Não há etapa de build.
+Para publicar, envie o `index.html` e a pasta `certificados/` para qualquer hospedagem de arquivos estáticos, como Vercel, Netlify ou GitHub Pages. Não há etapa de build.
 
 ## Estrutura do `index.html`
 
@@ -118,7 +118,7 @@ Nos avatares, a borda é um contorno que acompanha a silhueta. O QR Code e os lo
 
 ## Como atualizar o conteúdo
 
-As imagens são carregadas por URL externa, a maioria de `clareia1.vercel.app`. Hospede a imagem nova e use a URL dela no HTML.
+As imagens de projetos e do mural Memories são carregadas por URL externa, a maioria de `clareia1.vercel.app`. Hospede a imagem nova e use a URL dela no HTML. Os certificados ficam na pasta `certificados/`.
 
 **Novo projeto:** copie um bloco `.case-card-ed` dentro de `.cases-editorial-grid`:
 
@@ -151,14 +151,16 @@ As imagens são carregadas por URL externa, a maioria de `clareia1.vercel.app`. 
 </div>
 ```
 
-**Novo certificado:** dentro de `.cert-grid`:
+**Novo certificado:** converta o arquivo para imagem (WebP com até 1400px de largura), salve em `certificados/` e adicione o bloco dentro de `.cert-grid`, informando as dimensões reais da imagem. Os certificados estão ordenados do mais recente para o mais antigo.
 
 ```html
 <div class="cert-card">
-    <img loading="lazy" decoding="async" src="URL_DO_CERTIFICADO" alt="Nome do certificado">
+    <img loading="lazy" decoding="async" src="certificados/nome-do-certificado.webp" width="1400" height="990" alt="Certificado: Nome do certificado">
     <span>Nome do certificado</span>
 </div>
 ```
+
+> **Atenção aos dados pessoais:** antes de publicar, cubra CPF, data de nascimento e dados parecidos na imagem. O site e o repositório são públicos. O `.gitignore` impede o envio de PDFs e PNGs da pasta principal, onde ficam os originais.
 
 Imagens adicionadas nesses três lugares recebem o efeito de duotone automaticamente. As do mural e dos certificados também abrem no lightbox ao clicar.
 
