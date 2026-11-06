@@ -11,42 +11,54 @@
     <!-- Tipografia -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+    <!-- Carregamento não bloqueante: a splash pinta antes de fontes e ícones chegarem -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </noscript>
+
+    <!-- Sem JS a página aparece direto: splash e scroll reveal só valem com a classe .js -->
+    <script>document.documentElement.classList.add('js', 'is-loading');</script>
     
     <style>
-        /* DESIGN SYSTEM - VARIÁVEIS (Modo Escuro Padrão) */
+        /* 1. DESIGN SYSTEM - PALETA ESTRITA */
         :root {
-            --bg-main: #000000;
-            --text-main: #90E0EF;
-            --text-heading: #FFFFFF;
-            --neon-cyan: #00BFFF;
-            --neon-purple: #6610F2;
-            --title-deep-blue: #0047AB;
-            
-            /* Fundos e Bordas */
-            --bg-card: rgba(20, 20, 20, 0.8);
-            --line-color: rgba(144, 224, 239, 0.2);
-            --bg-pill: rgba(0, 191, 255, 0.1);
-            
+            --bg-base: #11012e;
+            --surface: #2a0c62;
+            --accent-pink: #ff018f;
+            --accent-yellow: #ffcc00;
+            --text-main: #ffffff;
+            --text-muted: #b8b0d8;
+
+            /* Derivados da paleta */
+            --line-color: rgba(184, 176, 216, 0.2);
+            --glow-pink: 0 0 20px rgba(255, 1, 143, 0.4);
+            --glow-yellow: 0 0 20px rgba(255, 204, 0, 0.35);
+
+            /* Curvas e duração */
+            --ease-expo: cubic-bezier(0.77, 0, 0.175, 1);
+            --ease-back: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+            /* Contorno "recorte de papel" dos avatares */
+            --sticker-white: drop-shadow(2px 2px 0 #fff) drop-shadow(-2px -2px 0 #fff) drop-shadow(2px -2px 0 #fff) drop-shadow(-2px 2px 0 #fff) drop-shadow(10px 15px 15px rgba(17, 1, 46, 0.6));
+            --sticker-pink: drop-shadow(2px 2px 0 #ff018f) drop-shadow(-2px -2px 0 #ff018f) drop-shadow(2px -2px 0 #ff018f) drop-shadow(-2px 2px 0 #ff018f) drop-shadow(0 0 20px rgba(255, 1, 143, 0.4));
+            --sticker-yellow: drop-shadow(2px 2px 0 #ffcc00) drop-shadow(-2px -2px 0 #ffcc00) drop-shadow(2px -2px 0 #ffcc00) drop-shadow(-2px 2px 0 #ffcc00) drop-shadow(0 0 20px rgba(255, 204, 0, 0.35));
+
             /* Shapes */
             --radius-pill: 50px;
             --radius-card: 28px;
             --radius-squircle: 40px 100px 40px 100px;
         }
 
-        /* Modo Claro */
-        body.light-mode {
-            --bg-main: #FFFFFF; 
-            --text-main: #334155; 
-            --text-heading: #0A2463; 
-            --bg-card: #FFFFFF;
-            --line-color: #CBD5E1;
-            --bg-pill: #E0F2FE;
-            --neon-cyan: #00A8E8; 
-            --neon-purple: #6610F2;
+        /* Ângulo animável da borda em gradiente das fotos */
+        @property --fx-angle {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 0deg;
         }
 
         * {
@@ -57,19 +69,45 @@
 
         html {
             scroll-behavior: smooth;
+            scrollbar-gutter: stable;
+            background-color: var(--bg-base);
+        }
+
+        html.is-loading {
+            overflow: hidden;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--accent-yellow);
+            outline-offset: 3px;
         }
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
+            background-color: var(--bg-base);
+            color: var(--text-muted);
             line-height: 1.6;
             overflow-x: hidden;
-            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Atmosfera de fundo: pintada uma vez, fixa, sem custo no scroll */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(60vw 60vw at 90% -10%, rgba(255, 1, 143, 0.16), transparent 65%),
+                radial-gradient(50vw 50vw at -10% 60%, rgba(42, 12, 98, 0.9), transparent 70%);
         }
 
         h1, h2, h3, h4, .font-title {
             font-family: 'Fredoka', sans-serif;
+        }
+
+        h1, h2, h3, h4, h5 {
+            transition: color 0.3s ease;
         }
 
         /* Texto Lateral Vertical Fixo */
@@ -82,7 +120,7 @@
             font-size: 12px;
             font-weight: 600;
             letter-spacing: 4px;
-            color: var(--text-main);
+            color: var(--text-muted);
             opacity: 0.5;
             z-index: 100;
             pointer-events: none;
@@ -91,7 +129,7 @@
         header {
             position: sticky;
             top: 0;
-            background-color: transparent;
+            background-color: rgba(17, 1, 46, 0.72);
             backdrop-filter: blur(10px);
             z-index: 1000;
             border-bottom: 1px solid var(--line-color);
@@ -108,12 +146,12 @@
         }
 
         .logo-area img {
-            height: 70px; 
+            height: 70px;
             transition: transform 0.3s;
         }
-        
+
         .logo-area img:hover {
-            transform: scale(1.05); 
+            transform: scale(1.05);
         }
 
         .nav-right {
@@ -129,29 +167,34 @@
         }
 
         nav ul li a {
+            position: relative;
             text-decoration: none;
-            color: var(--text-main);
+            color: var(--text-muted);
             font-family: 'Fredoka', sans-serif;
             font-weight: 500;
             font-size: 14px;
-            transition: color 0.3s;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -4px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-yellow));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s var(--ease-expo);
         }
 
         nav ul li a:hover {
-            color: var(--neon-cyan);
+            color: var(--accent-yellow);
         }
 
-        /* Botão Tema */
-        .theme-toggle {
-            background: none;
-            border: none;
-            color: var(--text-heading);
-            font-size: 20px;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        .theme-toggle:hover {
-            color: var(--neon-cyan);
+        nav ul li a:hover::after {
+            transform: scaleX(1);
         }
 
         .section-container {
@@ -168,12 +211,12 @@
             margin-bottom: 40px;
             margin-top: 40px;
         }
-        
+
         .editorial-divider span {
             font-family: 'Fredoka', sans-serif;
             font-size: 20px;
             font-weight: 700;
-            color: var(--text-heading);
+            color: var(--text-main);
         }
 
         .editorial-divider .line {
@@ -185,13 +228,13 @@
         .circle-btn-sm {
             width: 30px;
             height: 30px;
-            border: 1px solid var(--text-main);
+            border: 1px solid var(--text-muted);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
-            color: var(--text-main);
+            color: var(--text-muted);
         }
 
         /* Hero */
@@ -209,15 +252,15 @@
 
         .hero-quote-icon {
             font-size: 60px;
-            color: var(--neon-cyan);
+            color: var(--accent-pink);
             margin-bottom: -20px;
             display: block;
         }
 
         .pill-tag {
             display: inline-block;
-            background-color: var(--neon-cyan);
-            color: #000;
+            background-color: var(--accent-pink);
+            color: var(--bg-base);
             font-family: 'Fredoka', sans-serif;
             font-weight: 600;
             padding: 8px 24px;
@@ -230,20 +273,26 @@
         .giant-title {
             font-size: 130px;
             line-height: 0.85;
-            color: var(--text-heading);
+            color: var(--text-main);
             margin-bottom: 30px;
             position: relative;
             z-index: 2;
+            text-shadow: 3px 0 0 rgba(255, 1, 143, 0.55), -3px 0 0 rgba(255, 204, 0, 0.35);
+            transition: text-shadow 0.3s ease;
         }
-        
+
+        .giant-title:hover {
+            text-shadow: 6px 0 0 rgba(255, 1, 143, 0.8), -6px 0 0 rgba(255, 204, 0, 0.6);
+        }
+
         .giant-title .t-top { display: block; margin-left: 20px; }
         .giant-title .t-bottom { display: block; margin-left: 60px; }
-        .giant-title .dot { color: var(--neon-cyan); }
+        .giant-title .dot { color: var(--accent-yellow); }
 
         .doodle {
             position: absolute;
             opacity: 0.6;
-            color: var(--text-main);
+            color: var(--text-muted);
             font-size: 24px;
         }
         .d-1 { top: -20px; right: 100px; transform: rotate(15deg); }
@@ -272,7 +321,9 @@
             right: 0;
             width: 85%;
             height: 80%;
-            background-color: var(--neon-cyan);
+            background: linear-gradient(160deg, var(--surface), rgba(42, 12, 98, 0.35));
+            border: 1px solid rgba(255, 1, 143, 0.6);
+            box-shadow: var(--glow-pink);
             border-radius: var(--radius-squircle);
             z-index: 1;
         }
@@ -283,67 +334,29 @@
             left: -40px;
             width: 300px;
             height: 300px;
-            border: 1px solid var(--text-main);
+            border: 1px solid var(--text-muted);
             border-radius: 50%;
             z-index: 0;
             opacity: 0.4;
         }
 
-        /* Efeito Recorte de Papel (Sticker) */
-        .hero-avatar {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            height: 115%;
-            width: auto;
-            z-index: 3;
-            filter: drop-shadow(2px 2px 0px #FFFFFF) 
-                    drop-shadow(-2px -2px 0px #FFFFFF) 
-                    drop-shadow(2px -2px 0px #FFFFFF) 
-                    drop-shadow(-2px 2px 0px #FFFFFF)
-                    drop-shadow(10px 15px 15px rgba(0,0,0,0.6));
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            transform-origin: bottom center;
-        }
-
-        .hero-avatar:hover {
-            transform: translateX(-50%) scale(1.05);
-            filter: drop-shadow(2px 2px 0px var(--neon-cyan)) 
-                    drop-shadow(-2px -2px 0px var(--neon-cyan)) 
-                    drop-shadow(2px -2px 0px var(--neon-cyan)) 
-                    drop-shadow(-2px 2px 0px var(--neon-cyan))
-                    drop-shadow(15px 25px 20px rgba(0,0,0,0.5));
-        }
-
-        /* Mesmo efeito de sticker para a imagem do "Sobre" */
+        /* Avatares recortados (sticker): os efeitos ficam na seção 4 do FX */
+        .hero-avatar,
         .about-avatar {
             position: absolute;
             bottom: 0;
             left: 50%;
-            transform: translateX(-50%);
-            height: 105%;
             width: auto;
             z-index: 3;
-            filter: drop-shadow(2px 2px 0px #FFFFFF) 
-                    drop-shadow(-2px -2px 0px #FFFFFF) 
-                    drop-shadow(2px -2px 0px #FFFFFF) 
-                    drop-shadow(-2px 2px 0px #FFFFFF)
-                    drop-shadow(10px 15px 15px rgba(0,0,0,0.6));
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
+            transform: translateX(-50%);
             transform-origin: bottom center;
+            filter: var(--sticker-white);
+            transition: transform 0.4s var(--ease-back), opacity 0.5s ease;
+            cursor: pointer;
         }
 
-        .about-avatar:hover {
-            transform: translateX(-50%) scale(1.05);
-            filter: drop-shadow(2px 2px 0px var(--neon-cyan)) 
-                    drop-shadow(-2px -2px 0px var(--neon-cyan)) 
-                    drop-shadow(2px -2px 0px var(--neon-cyan)) 
-                    drop-shadow(-2px 2px 0px var(--neon-cyan))
-                    drop-shadow(15px 25px 20px rgba(0,0,0,0.5));
-        }
+        .hero-avatar { height: 115%; }
+        .about-avatar { height: 105%; }
 
         .hero-bottom-info {
             display: flex;
@@ -359,14 +372,14 @@
             gap: 15px;
             font-family: 'Fredoka', sans-serif;
             font-weight: 600;
-            color: var(--text-heading);
+            color: var(--text-main);
             font-size: 18px;
         }
 
         .hero-subtext {
             text-align: right;
             font-size: 13px;
-            color: var(--text-main);
+            color: var(--text-muted);
             max-width: 200px;
         }
 
@@ -375,7 +388,7 @@
             font-size: 300px;
             font-family: 'Fredoka', sans-serif;
             font-weight: 700;
-            color: var(--text-main);
+            color: var(--text-muted);
             opacity: 0.03;
             top: -150px;
             left: -50px;
@@ -411,7 +424,9 @@
             left: 0;
             width: 90%;
             height: 70%;
-            background-color: var(--neon-cyan);
+            background: linear-gradient(160deg, var(--surface), rgba(42, 12, 98, 0.35));
+            border: 1px solid rgba(255, 1, 143, 0.6);
+            box-shadow: var(--glow-pink);
             border-radius: 30px 80px 30px 30px;
             z-index: 1;
         }
@@ -420,8 +435,8 @@
         .contact-box {
             display: flex;
             gap: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--neon-cyan); 
+            background: var(--surface);
+            border: 1px solid var(--accent-pink);
             padding: 20px;
             border-radius: 16px;
             align-items: center;
@@ -430,7 +445,7 @@
 
         .contact-box:hover {
             transform: translateY(-3px);
-            box-shadow: 0px 5px 15px rgba(0, 191, 255, 0.15);
+            box-shadow: var(--glow-pink);
         }
 
         .qr-placeholder {
@@ -439,24 +454,24 @@
             border-radius: 8px;
             overflow: hidden;
             flex-shrink: 0;
-            background-color: #FFFFFF; 
+            background-color: #FFFFFF;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 5px; 
+            padding: 5px;
         }
-        
+
         .qr-placeholder img {
             width: 100%;
             height: 100%;
-            object-fit: contain; 
+            object-fit: contain;
         }
 
         .contact-info h4 {
             font-size: 18px;
-            color: var(--text-heading);
+            color: var(--text-main);
             margin-bottom: 10px;
-            border-bottom: 2px dotted var(--neon-cyan);
+            border-bottom: 2px dotted var(--accent-pink);
             display: inline-block;
         }
 
@@ -465,7 +480,7 @@
             font-size: 13px;
         }
         .contact-info ul li { margin-bottom: 6px; display: flex; align-items: center; gap: 8px;}
-        
+
         /* Links interativos nos contatos */
         .contact-info ul li a {
             color: inherit;
@@ -476,7 +491,7 @@
             transition: color 0.3s ease;
         }
         .contact-info ul li a:hover {
-            color: var(--neon-cyan);
+            color: var(--accent-yellow);
         }
 
         /* Destaque Visual para o bloco de Hard Skills */
@@ -493,8 +508,8 @@
             top: 0;
             bottom: 0;
             width: 25px;
-            border: 4px solid var(--neon-cyan);
-            border-radius: 8px; 
+            border: 4px solid var(--accent-pink);
+            border-radius: 8px;
             transition: all 0.3s ease;
             pointer-events: none;
         }
@@ -515,39 +530,39 @@
 
         .hard-skills-brackets:hover::before {
             transform: translateX(-5px);
-            box-shadow: -4px 0px 15px rgba(0, 191, 255, 0.2);
+            box-shadow: -4px 0 20px rgba(255, 1, 143, 0.4);
         }
 
         .hard-skills-brackets:hover::after {
             transform: translateX(5px);
-            box-shadow: 4px 0px 15px rgba(0, 191, 255, 0.2);
+            box-shadow: 4px 0 20px rgba(255, 1, 143, 0.4);
         }
 
         /* Mural de Memories (Lousa) */
         .memories-board {
-            background: var(--bg-main);
-            border: 1px solid var(--neon-cyan);
+            background: var(--surface);
+            border: 1px solid var(--accent-pink);
             border-radius: 16px;
             padding: 20px;
             position: relative;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         .memories-board:hover {
             transform: translateY(-3px);
-            box-shadow: 0px 5px 15px rgba(0, 191, 255, 0.15); 
+            box-shadow: var(--glow-pink);
         }
 
         .memories-header {
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 2px dotted var(--neon-cyan); 
+            border-bottom: 2px dotted var(--accent-pink);
             padding-bottom: 10px;
         }
 
         .memories-header h4 {
             font-size: 18px;
-            color: var(--text-heading);
+            color: var(--text-main);
             font-family: 'Fredoka', sans-serif;
             display: inline-flex;
             align-items: center;
@@ -566,7 +581,7 @@
             background: #ffffff;
             padding: 6px 6px 8px 6px;
             border-radius: 2px;
-            box-shadow: 2px 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 2px 5px 15px rgba(17, 1, 46,0.5);
             transition: transform 0.3s, z-index 0.3s;
             cursor: zoom-in;
             z-index: 1;
@@ -585,7 +600,6 @@
             height: 105px;
             object-fit: cover;
             display: block;
-            border: 1px solid #ddd;
         }
 
         .memory-logo {
@@ -604,13 +618,13 @@
             transform: translateX(-50%);
             width: 10px;
             height: 10px;
-            background: #ff4757;
+            background: var(--accent-pink);
             border-radius: 50%;
-            box-shadow: -1px 2px 4px rgba(0,0,0,0.5), inset -2px -2px 3px rgba(0,0,0,0.2);
+            box-shadow: -1px 2px 4px rgba(17, 1, 46,0.5), inset -2px -2px 3px rgba(17, 1, 46,0.2);
             z-index: 2;
         }
-        .pin-cyan { background: var(--neon-cyan); }
-        
+        .pin-yellow { background: var(--accent-yellow); }
+
         .pin::after {
             content: '';
             position: absolute;
@@ -623,7 +637,7 @@
         /* Coluna Direita About */
         .hello-title {
             font-size: 48px;
-            color: var(--text-heading);
+            color: var(--text-main);
             margin-bottom: 20px;
             display: flex;
             align-items: flex-start;
@@ -631,7 +645,7 @@
         }
         .hello-title::before {
             content: '“';
-            color: var(--neon-cyan);
+            color: var(--accent-pink);
             font-size: 60px;
             line-height: 0.5;
             margin-top: 15px;
@@ -639,12 +653,12 @@
 
         .bio-text {
             font-size: 16px;
-            color: var(--text-main);
+            color: var(--text-muted);
             margin-bottom: 40px;
             font-weight: 300;
         }
         .bio-text strong {
-            color: var(--text-heading);
+            color: var(--text-main);
             font-weight: 600;
         }
 
@@ -660,9 +674,9 @@
 
         .resume-section-title {
             font-size: 20px;
-            color: var(--text-heading);
+            color: var(--text-main);
             margin-bottom: 20px;
-            border-bottom: 2px dotted var(--neon-cyan);
+            border-bottom: 2px dotted var(--accent-pink);
             display: inline-block;
         }
 
@@ -671,31 +685,35 @@
             gap: 15px;
             margin-bottom: 20px;
         }
-        
+
         .resume-date {
             font-family: 'Fredoka', sans-serif;
             font-size: 18px;
             font-weight: 600;
-            color: var(--text-heading);
+            color: var(--text-main);
             line-height: 1.1;
             min-width: 45px;
         }
         .resume-date span {
             font-size: 11px;
             display: block;
-            color: var(--neon-cyan);
+            color: var(--accent-yellow);
             font-family: 'Outfit', sans-serif;
             font-weight: 400;
         }
 
         .resume-details h5 {
             font-size: 15px;
-            color: var(--text-heading);
+            color: var(--text-main);
             margin-bottom: 4px;
         }
         .resume-details p {
             font-size: 13px;
-            color: var(--text-main);
+            color: var(--text-muted);
+        }
+
+        .resume-item:hover h5 {
+            color: var(--accent-yellow);
         }
 
         .skills-editorial-cloud {
@@ -704,11 +722,11 @@
             gap: 8px;
             margin-bottom: 20px;
         }
-        
+
         .skills-editorial-cloud h5 {
             width: 100%;
             font-size: 13px;
-            color: var(--neon-cyan);
+            color: var(--accent-yellow);
             margin-bottom: 4px;
             font-weight: 600;
         }
@@ -717,25 +735,26 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--bg-card);
+            background: var(--surface);
             border: 1px solid var(--line-color);
-            color: var(--text-main);
+            color: var(--text-muted);
             padding: 5px 12px;
             border-radius: var(--radius-pill);
             font-size: 12px;
             font-weight: 500;
             transition: all 0.2s;
         }
-        
+
         .pill-tag-sm.destaque {
-            border-color: var(--neon-cyan);
-            color: var(--text-heading);
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
         }
 
         .pill-tag-sm:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            border-color: var(--neon-cyan);
+            background: var(--accent-pink);
+            color: var(--bg-base);
+            border-color: var(--accent-pink);
+            box-shadow: var(--glow-pink);
         }
 
         .overlapping-title-container {
@@ -752,12 +771,12 @@
             transform: translate(-50%, -50%);
             font-size: 100px;
             font-family: 'Fredoka', sans-serif;
-            color: var(--text-main);
+            color: var(--text-muted);
             opacity: 0.05;
             white-space: nowrap;
             width: 100%;
             pointer-events: none;
-            -webkit-text-stroke: 2px var(--text-main);
+            -webkit-text-stroke: 2px var(--text-muted);
             color: transparent;
         }
 
@@ -765,12 +784,12 @@
             position: relative;
             font-size: 50px;
             font-family: 'Fredoka', sans-serif;
-            color: var(--text-heading);
+            color: var(--text-main);
             z-index: 2;
         }
         .fg-huge-text span {
-            background-color: var(--neon-cyan);
-            color: #000;
+            background-color: var(--accent-pink);
+            color: var(--bg-base);
             padding: 0 10px;
             border-radius: 8px;
         }
@@ -778,29 +797,56 @@
         /* Cards de Cases */
         .cases-editorial-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
             gap: 40px;
         }
 
         .case-card-ed {
-            background: var(--bg-card);
-            border: 6px solid var(--neon-cyan); 
-            border-radius: 40px; 
+            position: relative;
+            background: var(--surface);
+            border: 2px solid rgba(255, 1, 143, 0.35);
+            border-radius: 40px;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             overflow: hidden;
+        }
+
+        /* Gradiente dinâmico que segue o cursor (--px/--py vêm do JS) */
+        .case-card-ed::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            background: radial-gradient(420px circle at var(--px, 50%) var(--py, 0%), rgba(255, 1, 143, 0.24), rgba(255, 204, 0, 0.08) 45%, transparent 70%);
+            transition: opacity 0.3s ease;
+        }
+
+        .case-card-ed > * {
+            position: relative;
+            z-index: 1;
         }
 
         .case-card-ed:hover {
             transform: translateY(-5px);
-            box-shadow: 0px 15px 30px rgba(0, 191, 255, 0.2);
+            border-color: var(--accent-pink);
+            box-shadow: var(--glow-pink);
+        }
+
+        .case-card-ed:hover::before {
+            opacity: 1;
+        }
+
+        .case-card-ed:hover h4 {
+            color: var(--accent-yellow);
         }
 
         .case-img-wrapper {
             display: block;
             width: 100%;
-            border-bottom: 2px solid var(--bg-main); 
+            border-bottom: 2px solid var(--bg-base);
             overflow: hidden;
         }
 
@@ -810,11 +856,6 @@
             object-fit: cover;
             object-position: top;
             display: block;
-            transition: transform 0.5s ease;
-        }
-
-        .case-img-wrapper:hover img {
-            transform: scale(1.05);
         }
 
         .case-content {
@@ -827,15 +868,15 @@
 
         .case-card-ed h4 {
             font-size: 24px;
-            color: var(--text-heading);
+            color: var(--text-main);
             font-weight: 600;
             display: flex;
             align-items: center;
         }
-        
+
         .case-card-ed p {
             font-size: 16px;
-            color: var(--text-main);
+            color: var(--text-muted);
             flex-grow: 1;
             line-height: 1.5;
             font-weight: 500;
@@ -846,13 +887,13 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        
+
         .case-techs span {
             font-size: 13px;
             padding: 6px 12px;
-            background: rgba(0, 191, 255, 0.1); 
-            color: var(--text-heading);
-            border-radius: 8px; 
+            background: rgba(255, 204, 0, 0.12);
+            color: var(--accent-yellow);
+            border-radius: 8px;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
@@ -860,29 +901,48 @@
 
         .case-links-sm {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             margin-top: 15px;
-            border-top: 1px solid rgba(144, 224, 239, 0.15); 
+            border-top: 1px solid rgba(184, 176, 216, 0.15);
             padding-top: 25px;
         }
 
+        /* Botões: o translate magnético vem do JS (--mx/--my) */
         .case-links-sm a {
             font-size: 14px;
             text-decoration: none;
-            color: var(--text-heading);
-            border: 1px solid rgba(144, 224, 239, 0.3);
+            color: var(--text-main);
+            border: 1px solid rgba(184, 176, 216, 0.35);
             padding: 8px 20px;
-            border-radius: 50px; 
-            transition: all 0.2s;
+            border-radius: 50px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
             font-weight: 500;
+            translate: var(--mx, 0) var(--my, 0);
+            transition: translate 0.25s ease-out, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, background-position 0.5s ease;
         }
 
         .case-links-sm a:hover {
-            background: rgba(144, 224, 239, 0.1);
-            border-color: var(--neon-cyan);
+            color: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+            box-shadow: var(--glow-yellow);
+        }
+
+        /* CTA primário: gradiente que desliza do rosa para o amarelo */
+        .case-links-sm a:first-child {
+            color: var(--bg-base);
+            font-weight: 600;
+            border-color: transparent;
+            background: linear-gradient(110deg, var(--accent-pink) 0%, var(--accent-pink) 45%, var(--accent-yellow) 100%) 0% 0% / 250% 100%;
+        }
+
+        .case-links-sm a:first-child:hover {
+            color: var(--bg-base);
+            border-color: transparent;
+            background-position: 100% 0%;
+            box-shadow: var(--glow-pink);
         }
 
         /* Grade de Certificados Menor */
@@ -900,18 +960,24 @@
             width: 100%;
             height: 110px;
             object-fit: cover;
+            cursor: zoom-in;
+        }
+
+        .cert-card .fx-photo {
             border-radius: 12px;
             border: 1px solid var(--line-color);
-            transition: 0.3s;
-            cursor: zoom-in;
             margin-bottom: 8px;
         }
-        .cert-card img:hover { border-color: var(--neon-cyan); transform: scale(1.05); }
-        
+
         .cert-card span {
             font-size: 12px;
-            color: var(--text-main);
+            color: var(--text-muted);
             font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .cert-card:hover span {
+            color: var(--accent-yellow);
         }
 
         /* Modal / Lightbox */
@@ -920,7 +986,7 @@
             position: fixed;
             z-index: 9999;
             left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(17, 1, 46, 0.9);
             backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
@@ -928,12 +994,12 @@
             transition: opacity 0.3s ease;
         }
         .lightbox-modal.show { display: flex; opacity: 1; }
-        
+
         .lightbox-content {
             max-width: 90%;
             max-height: 90vh;
             border-radius: 8px;
-            border: 2px solid var(--neon-cyan);
+            border: 2px solid var(--accent-pink);
             transform: scale(0.95);
             transition: transform 0.3s ease;
         }
@@ -947,7 +1013,7 @@
             font-weight: bold;
             cursor: pointer;
         }
-        .lightbox-close:hover { color: var(--neon-cyan); }
+        .lightbox-close:hover { color: var(--accent-pink); }
 
         footer {
             border-top: 1px solid var(--line-color);
@@ -964,7 +1030,7 @@
         }
 
         .footer-social-icons a {
-            color: var(--text-heading);
+            color: var(--text-main);
             font-size: 20px;
             width: 40px;
             height: 40px;
@@ -973,22 +1039,333 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            translate: var(--mx, 0) var(--my, 0);
+            transition: translate 0.25s ease-out, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .footer-social-icons a:hover {
-            background-color: var(--neon-cyan);
-            color: #000;
-            border-color: var(--neon-cyan);
+            background-color: var(--accent-pink);
+            color: var(--bg-base);
+            border-color: var(--accent-pink);
+            box-shadow: var(--glow-pink);
+        }
+
+        /* ==================================================================
+           2. SPLASH SCREEN
+           O estilo é inline e fontes/ícones não bloqueiam, então ela pinta
+           antes do restante da página. A lógica está logo após o <body>.
+           ================================================================== */
+        .splash {
+            position: fixed;
+            inset: 0;
+            z-index: 2147483647;
+            display: grid;
+            place-items: center;
+            background-color: var(--bg-base);
+            clip-path: inset(0 0 0 0);
+            transition: clip-path 1.2s var(--ease-expo), opacity 0.5s ease 0.7s;
+        }
+
+        html:not(.js) .splash {
+            display: none;
+        }
+
+        /* Saída: cortina subindo + fade, com o conteúdo em scale-up (1.2s no total) */
+        .splash.is-leaving {
+            clip-path: inset(0 0 100% 0);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .splash__inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            transition: transform 1.2s var(--ease-expo), opacity 0.6s ease;
+        }
+
+        .splash.is-leaving .splash__inner {
+            transform: scale(1.35);
+            opacity: 0;
+        }
+
+        .splash__mark {
+            position: relative;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: clamp(44px, 15vw, 170px);
+            line-height: 1.15;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+        }
+
+        .splash__word {
+            display: block;
+        }
+
+        .splash__word--outline {
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(184, 176, 216, 0.45);
+        }
+
+        .splash__word--fill,
+        .splash__word--ghost {
+            position: absolute;
+            inset: 0;
+        }
+
+        /* Preenchimento progressivo rosa > amarelo */
+        .splash__word--fill {
+            color: transparent;
+            background: linear-gradient(90deg, var(--accent-pink) 35%, var(--accent-yellow));
+            -webkit-background-clip: text;
+            background-clip: text;
+            clip-path: inset(-10% 100% -10% 0);
+            animation: splash-fill 1.3s var(--ease-expo) forwards;
+        }
+
+        /* Fatias de glitch deslocadas */
+        .splash__word--ghost {
+            mix-blend-mode: screen;
+            animation: splash-glitch 1.1s steps(1) infinite;
+        }
+
+        .splash__word--a { color: var(--accent-pink); }
+        .splash__word--b { color: var(--accent-yellow); animation-delay: -0.45s; animation-direction: reverse; }
+
+        .splash__caption {
+            font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+            font-size: clamp(10px, 1.6vw, 13px);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .splash__bar {
+            width: min(320px, 60vw);
+            height: 2px;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .splash__bar::after {
+            content: '';
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-pink), var(--accent-yellow));
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: splash-bar 1.3s var(--ease-expo) forwards;
+        }
+
+        @keyframes splash-fill {
+            to { clip-path: inset(-10% 0 -10% 0); }
+        }
+
+        @keyframes splash-bar {
+            to { transform: scaleX(1); }
+        }
+
+        @keyframes splash-glitch {
+            0%, 100% { clip-path: inset(50% 0 50% 0); translate: 0 0; }
+            12% { clip-path: inset(12% 0 68% 0); translate: -6px 0; }
+            24% { clip-path: inset(62% 0 14% 0); translate: 7px 0; }
+            36% { clip-path: inset(50% 0 50% 0); translate: 0 0; }
+            70% { clip-path: inset(34% 0 48% 0); translate: 4px 0; }
+            82% { clip-path: inset(78% 0 4% 0); translate: -8px 0; }
+        }
+
+        /* ==================================================================
+           3. MOTION: SCROLL REVEAL
+           Usa a propriedade translate (e não transform) para não disputar
+           com os hovers. O JS remove as classes quando a entrada termina.
+           ================================================================== */
+        .js .reveal {
+            opacity: 0;
+            translate: 0 28px;
+            transition: opacity 0.8s var(--ease-expo), translate 0.8s var(--ease-expo);
+            transition-delay: var(--reveal-delay, 0ms);
+        }
+
+        .js .reveal.is-visible {
+            opacity: 1;
+            translate: 0 0;
+        }
+
+        /* ==================================================================
+           4. FOTOS: DUOTONE + GLITCH NO HOVER
+           Os wrappers (.fx-photo / .fx-cutout) são criados pelo JS, então
+           qualquer foto nova nas galerias recebe o efeito automaticamente.
+           ================================================================== */
+
+        /* Fotos retangulares: duotone real com camadas de blend.
+           P&B + rosa (multiply) nas luzes + roxo (lighten) nas sombras. */
+        .fx-photo {
+            position: relative;
+            display: block;
+            overflow: hidden;
+            isolation: isolate;
+            background: var(--surface);
+            line-height: 0;
+        }
+
+        .fx-photo img {
+            display: block;
+            filter: grayscale(1) contrast(1.1) saturate(1);
+            transition: filter 0.5s ease, transform 0.5s ease;
+        }
+
+        .fx-photo::before,
+        .fx-photo::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .fx-photo::before {
+            background: var(--accent-pink);
+            mix-blend-mode: multiply;
+        }
+
+        .fx-photo::after {
+            background: var(--surface);
+            mix-blend-mode: lighten;
+        }
+
+        /* Borda fina em gradiente, recortada com máscara */
+        .fx-photo__border {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            padding: 2px;
+            border-radius: inherit;
+            pointer-events: none;
+            opacity: 0;
+            background: conic-gradient(from var(--fx-angle), var(--accent-pink), var(--accent-yellow), var(--accent-pink));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+            transition: opacity 0.3s ease;
+        }
+
+        /* Hover no mouse, foco no teclado ou .is-active no toque */
+        .fx-photo:hover img,
+        .fx-photo.is-active img,
+        a:focus-visible .fx-photo img {
+            filter: grayscale(0) contrast(1) saturate(1.25);
+            transform: scale(1.06);
+            animation: fx-rgb-split 0.4s step-end;
+        }
+
+        .fx-photo:hover::before,
+        .fx-photo:hover::after,
+        .fx-photo.is-active::before,
+        .fx-photo.is-active::after,
+        a:focus-visible .fx-photo::before,
+        a:focus-visible .fx-photo::after {
+            opacity: 0;
+        }
+
+        .fx-photo:hover .fx-photo__border,
+        .fx-photo.is-active .fx-photo__border,
+        a:focus-visible .fx-photo__border {
+            opacity: 1;
+            animation: fx-spin 2.4s linear infinite;
+        }
+
+        /* Avatares recortados: um overlay pintaria um retângulo sobre o fundo
+           transparente, então o duotone é um filtro SVG numa cópia sobreposta. */
+        .fx-cutout__duo {
+            z-index: 4;
+            filter: url(#fx-duotone) var(--sticker-white);
+            pointer-events: none;
+        }
+
+        .fx-cutout:hover .hero-avatar,
+        .fx-cutout:hover .about-avatar,
+        .fx-cutout.is-active .hero-avatar,
+        .fx-cutout.is-active .about-avatar {
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        .fx-cutout:hover .fx-cutout__duo,
+        .fx-cutout.is-active .fx-cutout__duo {
+            opacity: 0;
+        }
+
+        /* Glitch por 0.4s e, depois, contorno alternando rosa e amarelo */
+        .fx-cutout:hover .fx-cutout__base {
+            animation: fx-rgb-split 0.4s step-end, fx-sticker-cycle 1.6s linear 0.4s infinite;
+        }
+
+        /* No toque o contorno fica fixo: poupa bateria durante o scroll */
+        .fx-cutout.is-active .fx-cutout__base {
+            filter: var(--sticker-pink);
+            animation: fx-rgb-split 0.4s step-end;
+        }
+
+        /* Deslocamento real dos canais R/G/B via filtros SVG (ver #fx-rgb-*) */
+        @keyframes fx-rgb-split {
+            0% { filter: url(#fx-rgb-lg); translate: -3px 0; }
+            25% { filter: url(#fx-rgb-sm); translate: 3px 1px; }
+            50% { filter: url(#fx-rgb-lg); translate: -2px -1px; }
+            75% { filter: url(#fx-rgb-sm); translate: 2px 0; }
+        }
+
+        @keyframes fx-spin {
+            to { --fx-angle: 360deg; }
+        }
+
+        @keyframes fx-sticker-cycle {
+            0%, 100% { filter: var(--sticker-pink); }
+            50% { filter: var(--sticker-yellow); }
+        }
+
+        .fx-defs {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+
+        /* Acessibilidade e impressão */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                transition-delay: 0ms !important;
+            }
+
+            .js .reveal { opacity: 1; translate: 0 0; }
+        }
+
+        @media print {
+            .splash { display: none; }
+            .js .reveal { opacity: 1; translate: 0 0; }
         }
 
         /* Responsividade */
+        @media (max-width: 480px) {
+            .logo-area img { height: 44px; }
+            .nav-right { gap: 0; }
+            nav ul { gap: 14px; }
+            nav ul li a { font-size: 13px; }
+        }
+
         @media (max-width: 900px) {
             .nav-container { padding: 0 5vw; }
             .hero { grid-template-columns: 1fr; text-align: center; }
             .giant-title { font-size: 80px; }
             .giant-title .t-bottom { margin-left: 0; }
-            .photo-wrapper { margin: 0 auto 40px; }
+            .photo-wrapper { margin: 0 auto 40px; width: min(350px, 78vw); height: min(450px, 100vw); }
+            .circle-outline { left: 0; width: min(300px, 70vw); height: min(300px, 70vw); }
             .about-grid { grid-template-columns: 1fr; }
             .resume-grid { grid-template-columns: 1fr; }
             .fg-huge-text { font-size: 35px; }
@@ -999,6 +1376,82 @@
     </style>
 </head>
 <body>
+
+    <!-- Splash screen: primeiro elemento do body, com lógica própria e independente do restante -->
+    <div id="splash" class="splash" role="status" aria-label="Carregando o portfólio de Leônidas Leandro">
+        <div class="splash__inner" aria-hidden="true">
+            <div class="splash__mark">
+                <span class="splash__word splash__word--outline">LEÔNIDAS</span>
+                <span class="splash__word splash__word--fill">LEÔNIDAS</span>
+                <span class="splash__word splash__word--ghost splash__word--a">LEÔNIDAS</span>
+                <span class="splash__word splash__word--ghost splash__word--b">LEÔNIDAS</span>
+            </div>
+            <div class="splash__bar"></div>
+            <div class="splash__caption">Transformação Digital &amp; Gestão</div>
+        </div>
+    </div>
+    <script>
+        (function () {
+            var root = document.documentElement;
+            var splash = document.getElementById('splash');
+            var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var MIN_VISIBLE = reduced ? 200 : 1500; // tempo para a animação de entrada ser vista
+            var MAX_VISIBLE = 4000;                 // rede lenta nunca prende o visitante
+            var EXIT = reduced ? 50 : 1200;         // duração definida em .splash
+            var left = false;
+
+            function leave() {
+                if (left) return;
+                left = true;
+                splash.classList.add('is-leaving');
+                root.classList.remove('is-loading');
+                document.dispatchEvent(new Event('splash:exit'));
+                setTimeout(function () { splash.remove(); }, EXIT + 50);
+            }
+
+            function onLoad() {
+                setTimeout(leave, Math.max(0, MIN_VISIBLE - performance.now()));
+            }
+
+            if (document.readyState === 'complete') onLoad();
+            else window.addEventListener('load', onLoad, { once: true });
+            setTimeout(leave, MAX_VISIBLE);
+        })();
+    </script>
+
+    <!-- Filtros SVG usados pelo efeito das fotos -->
+    <svg class="fx-defs" aria-hidden="true" focusable="false">
+        <defs>
+            <!-- Duotone que preserva a transparência dos PNGs: #2a0c62 nas sombras, #ff018f nas luzes -->
+            <filter id="fx-duotone" color-interpolation-filters="sRGB">
+                <feColorMatrix type="matrix" values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"/>
+                <feComponentTransfer>
+                    <feFuncR type="table" tableValues="0.1647 1"/>
+                    <feFuncG type="table" tableValues="0.0471 0.0039"/>
+                    <feFuncB type="table" tableValues="0.3843 0.5608"/>
+                </feComponentTransfer>
+            </filter>
+            <!-- RGB split: separa os canais, desloca vermelho e azul e recompõe -->
+            <filter id="fx-rgb-lg" color-interpolation-filters="sRGB" x="-5%" y="-5%" width="110%" height="110%">
+                <feColorMatrix in="SourceGraphic" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+                <feOffset in="r" dx="-7" result="r2"/>
+                <feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+                <feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+                <feOffset in="b" dx="7" result="b2"/>
+                <feBlend in="r2" in2="g" mode="screen" result="rg"/>
+                <feBlend in="rg" in2="b2" mode="screen"/>
+            </filter>
+            <filter id="fx-rgb-sm" color-interpolation-filters="sRGB" x="-5%" y="-5%" width="110%" height="110%">
+                <feColorMatrix in="SourceGraphic" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="r"/>
+                <feOffset in="r" dx="3" dy="1" result="r2"/>
+                <feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="g"/>
+                <feColorMatrix in="SourceGraphic" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="b"/>
+                <feOffset in="b" dx="-3" dy="-1" result="b2"/>
+                <feBlend in="r2" in2="g" mode="screen" result="rg"/>
+                <feBlend in="rg" in2="b2" mode="screen"/>
+            </filter>
+        </defs>
+    </svg>
 
     <!-- Texto Vertical Fixo na Lateral -->
     <div class="side-text">LEÔNIDAS &copy; 2026</div>
@@ -1017,10 +1470,6 @@
                         <li><a href="#cases">Cases</a></li>
                     </ul>
                 </nav>
-                <!-- Botão de Tema à direita -->
-                <button id="theme-toggle" class="theme-toggle">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
             </div>
         </div>
     </header>
@@ -1041,7 +1490,7 @@
             </div>
 
             <div class="hero-right">
-                <div class="photo-wrapper">
+                <div class="photo-wrapper fx-cutout">
                     <div class="squircle-bg"></div>
                     <div class="circle-outline"></div>
                     <!-- Imagem principal do Hero mantida com efeito Sticker -->
@@ -1072,7 +1521,7 @@
             <!-- Linha 1: Foto (Esquerda) e Bio (Direita) -->
             <div class="about-grid">
                 <div class="about-left">
-                    <div class="photo-wrapper-sm">
+                    <div class="photo-wrapper-sm fx-cutout">
                         <div class="squircle-bg-sm"></div>
                         <!-- Nova Foto Esquerda com Efeito Sticker -->
                         <img src="https://clareia1.vercel.app/leo345.png" class="about-avatar" alt="Leônidas Leandro - Sobre">
@@ -1121,130 +1570,130 @@
                             <!-- Nova Foto 1 - CESAR Embaixador -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/leo_embaixador.png" class="memory-img" alt="Memory - Embaixador CESAR">
-                                <img src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/leo_embaixador.png" class="memory-img" alt="Memory - Embaixador CESAR">
+                                <img loading="lazy" decoding="async" src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
                             </div>
                             <!-- Nova Foto 2 - Embaixadores -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/embaixadores.png" class="memory-img" alt="Memory - Embaixadores">
-                                <img src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/embaixadores.png" class="memory-img" alt="Memory - Embaixadores">
+                                <img loading="lazy" decoding="async" src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
                             </div>
                             <!-- Nova Foto 3 - Melq Fer -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/melq_fer.png" class="memory-img" alt="Memory - Melq Fer">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/melq_fer.png" class="memory-img" alt="Memory - Melq Fer">
+                                <img loading="lazy" decoding="async" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
                             </div>
                             <!-- Nova Foto 4 - Salesiano Dom Bosco -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/salesiano_dombosco.png" class="memory-img" alt="Memory - Salesiano Dom Bosco">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/salesiano_dombosco.png" class="memory-img" alt="Memory - Salesiano Dom Bosco">
+                                <img loading="lazy" decoding="async" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
                             </div>
                             <!-- Nova Foto 5 - Prof Melq -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/prof_melq.png" class="memory-img" alt="Memory - Prof Melq">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/prof_melq.png" class="memory-img" alt="Memory - Prof Melq">
+                                <img loading="lazy" decoding="async" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
                             </div>
                             <!-- Nova Foto 6 - Prof Ed -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/prof_ed.png" class="memory-img" alt="Memory - Prof Ed">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/prof_ed.png" class="memory-img" alt="Memory - Prof Ed">
+                                <img loading="lazy" decoding="async" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYB-vkVVdj6WBJLTkIL1dDlEo8t2ev-JM80wkiyDXy15C3iS8UpmowJm-l&s=10" class="memory-logo" alt="Logo Dom Bosco">
                             </div>
 
                             <!-- FOTOS ANTIGAS MANTIDAS (Para não perder o layout rico do mural) -->
                             <!-- Foto 1 - SESI -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho1.png" class="memory-img" alt="Memory - SESI">
-                                <img src="https://sesisc.org.br/sites/default/files/styles/large/public/2026-03/marca-sesi-reduzida_cor.webp?itok=xPxFwQ3R" class="memory-logo" alt="Logo SESI">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho1.png" class="memory-img" alt="Memory - SESI">
+                                <img loading="lazy" decoding="async" src="https://sesisc.org.br/sites/default/files/styles/large/public/2026-03/marca-sesi-reduzida_cor.webp?itok=xPxFwQ3R" class="memory-logo" alt="Logo SESI">
                             </div>
                             <!-- Foto 2 - SESI -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/trabalho2.png" class="memory-img" alt="Memory - SESI">
-                                <img src="https://sesisc.org.br/sites/default/files/styles/large/public/2026-03/marca-sesi-reduzida_cor.webp?itok=xPxFwQ3R" class="memory-logo" alt="Logo SESI">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho2.png" class="memory-img" alt="Memory - SESI">
+                                <img loading="lazy" decoding="async" src="https://sesisc.org.br/sites/default/files/styles/large/public/2026-03/marca-sesi-reduzida_cor.webp?itok=xPxFwQ3R" class="memory-logo" alt="Logo SESI">
                             </div>
                             <!-- Foto 3 - CESAR -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho3.png" class="memory-img" alt="Memory - CESAR">
-                                <img src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho3.png" class="memory-img" alt="Memory - CESAR">
+                                <img loading="lazy" decoding="async" src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
                             </div>
                             <!-- Foto 4 - CESAR -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/trabalho4.png" class="memory-img" alt="Memory - CESAR">
-                                <img src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho4.png" class="memory-img" alt="Memory - CESAR">
+                                <img loading="lazy" decoding="async" src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
                             </div>
                             <!-- Foto 5 - Grau Técnico -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho5.png" class="memory-img" alt="Memory - Grau Técnico">
-                                <img src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho5.png" class="memory-img" alt="Memory - Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
                             </div>
                             <!-- Foto 6 - CESAR School -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/trabalho6.png" class="memory-img" alt="Memory - CESAR School">
-                                <img src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho6.png" class="memory-img" alt="Memory - CESAR School">
+                                <img loading="lazy" decoding="async" src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
                             </div>
                             <!-- Foto 7 - CESAR School -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho7.png" class="memory-img" alt="Memory - CESAR School">
-                                <img src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho7.png" class="memory-img" alt="Memory - CESAR School">
+                                <img loading="lazy" decoding="async" src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
                             </div>
                             <!-- Foto 8 - Grau Técnico -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/trabalho8.png" class="memory-img" alt="Memory - Grau Técnico">
-                                <img src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho8.png" class="memory-img" alt="Memory - Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
                             </div>
                             <!-- Foto 9 - Grau Técnico -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho9.png" class="memory-img" alt="Memory - Grau Técnico">
-                                <img src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho9.png" class="memory-img" alt="Memory - Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
                             </div>
                             <!-- Foto 10 - CESAR School -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/trabalho10.png" class="memory-img" alt="Memory - CESAR School">
-                                <img src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho10.png" class="memory-img" alt="Memory - CESAR School">
+                                <img loading="lazy" decoding="async" src="https://www.cesar.school/wp-content/themes/alfama/assets/img/logo_cesar.png" class="memory-logo" alt="Logo CESAR">
                             </div>
                             <!-- Foto 11 - SENAI -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho11.png" class="memory-img" alt="Memory - SENAI">
-                                <img src="https://www.imagemhost.com.br/images/2024/11/22/Logo-novo-SENAI_-sem-slogan_755X325.png" class="memory-logo" alt="Logo SENAI">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho11.png" class="memory-img" alt="Memory - SENAI">
+                                <img loading="lazy" decoding="async" src="https://www.imagemhost.com.br/images/2024/11/22/Logo-novo-SENAI_-sem-slogan_755X325.png" class="memory-logo" alt="Logo SENAI">
                             </div>
                             <!-- Foto 14 - Grau Técnico -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/trabalho14.png" class="memory-img" alt="Memory - Grau Técnico">
-                                <img src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho14.png" class="memory-img" alt="Memory - Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
                             </div>
                             <!-- Foto 15 - Grau Técnico -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho15.png" class="memory-img" alt="Memory - Grau Técnico">
-                                <img src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho15.png" class="memory-img" alt="Memory - Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
                             </div>
                             <!-- Foto 16 - Grau Técnico -->
                             <div class="memory-pin-wrapper">
-                                <div class="pin pin-cyan"></div>
-                                <img src="https://clareia1.vercel.app/trabalho16.png" class="memory-img" alt="Memory - Grau Técnico">
-                                <img src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
+                                <div class="pin pin-yellow"></div>
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho16.png" class="memory-img" alt="Memory - Grau Técnico">
+                                <img loading="lazy" decoding="async" src="https://cms.grautecnico.com.br/cms_2017.2/logo-grau.png" class="memory-logo" alt="Logo Grau Técnico">
                             </div>
                             <!-- Foto 17 - SENAI -->
                             <div class="memory-pin-wrapper">
                                 <div class="pin"></div>
-                                <img src="https://clareia1.vercel.app/trabalho17.png" class="memory-img" alt="Memory - SENAI">
-                                <img src="https://www.imagemhost.com.br/images/2024/11/22/Logo-novo-SENAI_-sem-slogan_755X325.png" class="memory-logo" alt="Logo SENAI">
+                                <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/trabalho17.png" class="memory-img" alt="Memory - SENAI">
+                                <img loading="lazy" decoding="async" src="https://www.imagemhost.com.br/images/2024/11/22/Logo-novo-SENAI_-sem-slogan_755X325.png" class="memory-logo" alt="Logo SENAI">
                             </div>
                         </div>
                     </div>
@@ -1340,7 +1789,7 @@
                             <div class="skills-editorial-cloud">
                                 <h5>Automação, Cloud & IA</h5>
                                 <span class="pill-tag-sm destaque" title="n8n (RPA)"><i class="fa-solid fa-diagram-project"></i> n8n</span>
-                                <span class="pill-tag-sm destaque" title="Gemini"><i class="fa-solid fa-sparkles"></i> Gemini</span>
+                                <span class="pill-tag-sm destaque" title="Gemini"><i class="fa-solid fa-wand-magic-sparkles"></i> Gemini</span>
                                 <span class="pill-tag-sm destaque" title="GPT"><i class="fa-solid fa-robot"></i> GPT</span>
                                 <span class="pill-tag-sm" title="Claude"><i class="fa-solid fa-microchip"></i> Claude</span>
                                 <span class="pill-tag-sm" title="Copilot"><i class="fa-brands fa-microsoft"></i> Copilot</span>
@@ -1381,7 +1830,7 @@
                 <!-- NOVO PROJETO ADICIONADO: Radar Climática -->
                 <div class="case-card-ed">
                     <a href="https://radarclimatico.vercel.app/" target="_blank" class="case-img-wrapper">
-                        <img src="https://clareia1.vercel.app/dash_radar.png" alt="Prévia Radar Climática">
+                        <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/dash_radar.png" alt="Prévia Radar Climática">
                     </a>
                     <div class="case-content">
                         <h4>Radar Climática</h4>
@@ -1398,7 +1847,7 @@
 
                 <div class="case-card-ed">
                     <a href="https://clareia1.vercel.app/clareia.html" target="_blank" class="case-img-wrapper">
-                        <img src="https://clareia1.vercel.app/cabecalho_clareia.png" alt="Prévia Clareia">
+                        <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/cabecalho_clareia.png" alt="Prévia Clareia">
                     </a>
                     <div class="case-content">
                         <h4>Clareia – Fintech Whatsapp</h4>
@@ -1415,7 +1864,7 @@
 
                 <div class="case-card-ed">
                     <a href="https://v0-recentro-conecta-prototype.vercel.app/" target="_blank" class="case-img-wrapper">
-                        <img src="https://clareia1.vercel.app/cabecalho_recentroconecta.png" alt="Prévia Recentro Conecta">
+                        <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/cabecalho_recentroconecta.png" alt="Prévia Recentro Conecta">
                     </a>
                     <div class="case-content">
                         <h4>Recentro Conecta</h4>
@@ -1432,7 +1881,7 @@
 
                 <div class="case-card-ed">
                     <a href="https://v0-tech-talent.vercel.app/" target="_blank" class="case-img-wrapper">
-                        <img src="https://clareia1.vercel.app/cabecalho_techtalent.png" alt="Prévia TechTalent">
+                        <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/cabecalho_techtalent.png" alt="Prévia TechTalent">
                     </a>
                     <div class="case-content">
                         <h4>TechTalent – Plataforma</h4>
@@ -1479,7 +1928,7 @@
                             <span>
                                 <svg height="12" viewBox="0 0 1155 1000" fill="currentColor" style="vertical-align: middle; margin-right: 4px; margin-top: -2px;"><path d="M577.344 0L1154.69 1000H0L577.344 0Z"></path></svg> v0.dev
                             </span>
-                            <span><i class="fa-solid fa-sparkles"></i> Prompt Eng.</span> 
+                            <span><i class="fa-solid fa-wand-magic-sparkles"></i> Prompt Eng.</span> 
                             <span><i class="fa-solid fa-book-open"></i> E-Book</span>
                         </div>
                         <p>Desenvolvimento e estruturação de um E-Book completo sobre Engenharia de Prompt, construído com o auxílio da IA generativa do v0 (Vercel) para design e interfaces.</p>
@@ -1499,7 +1948,7 @@
                         <div class="case-techs">
                             <span><i class="fa-solid fa-palette"></i> CorelDraw</span> 
                             <span><i class="fa-solid fa-image"></i> Photoshop</span> 
-                            <span><i class="fa-solid fa-sparkles"></i> Nanobana (Gemini)</span>
+                            <span><i class="fa-solid fa-wand-magic-sparkles"></i> Nanobana (Gemini)</span>
                         </div>
                         <p>Estudo e projeto de reestruturação visual e rebranding da marca Exata Contábil, focado em criar uma nova identidade corporativa moderna e alinhada ao mercado.</p>
                         <div class="case-links-sm">
@@ -1517,67 +1966,67 @@
              <div class="cert-grid">
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/senai_analise_dados.png" alt="Análise de Dados">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/senai_analise_dados.png" alt="Análise de Dados">
                     <span>Análise de Dados</span>
                 </div>
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/gran_eng_prompt.png" alt="Eng. de Prompt">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/gran_eng_prompt.png" alt="Eng. de Prompt">
                     <span>Eng. de Prompt</span>
                 </div>
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/seg_informacao.png" alt="Segurança da Informação">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/seg_informacao.png" alt="Segurança da Informação">
                     <span>Seg. da Informação</span>
                 </div>
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/acedemia_quantum.png" alt="Comp. Quântica">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/acedemia_quantum.png" alt="Comp. Quântica">
                     <span>Comp. Quântica</span>
                 </div>
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/figama_framer.png" alt="Figma e Framer">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/figama_framer.png" alt="Figma e Framer">
                     <span>Figma e Framer</span>
                 </div>
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/figma.png" alt="Figma">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/figma.png" alt="Figma">
                     <span>Figma Design</span>
                 </div>
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/fast.png" alt="Metodologia FAST">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/fast.png" alt="Metodologia FAST">
                     <span>Metodologia FAST</span>
                 </div>
                 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/palestrante_recnplay.png" alt="Palestrante Rec'n'Play">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/palestrante_recnplay.png" alt="Palestrante Rec'n'Play">
                     <span>Palestrante Rec'n'Play</span>
                 </div>
 
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/logica_python.png" alt="Lógica e Python">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/logica_python.png" alt="Lógica e Python">
                     <span>Lógica & Python</span>
                 </div>
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/Workspace.png" alt="Google Workspace">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/Workspace.png" alt="Google Workspace">
                     <span>Google Workspace</span>
                 </div>
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/sql.png" alt="SQL">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/sql.png" alt="SQL">
                     <span>BD SQL</span>
                 </div>
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/projetos.png" alt="Projetos">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/projetos.png" alt="Projetos">
                     <span>Gestão de Projetos</span>
                 </div>
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/Next.png" alt="Next">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/Next.png" alt="Next">
                     <span>Metodologia Next</span>
                 </div>
                 <div class="cert-card">
-                    <img src="https://clareia1.vercel.app/n8n.png" alt="n8n">
+                    <img loading="lazy" decoding="async" src="https://clareia1.vercel.app/n8n.png" alt="n8n">
                     <span>Automação n8n</span>
                 </div>
              </div>
@@ -1623,27 +2072,119 @@
             }
         });
 
-        // Lógica do Dark / Light Mode Toggle
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeIcon = themeToggleBtn.querySelector('i');
+        const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isTouch = matchMedia('(hover: none)').matches;
+        const hasFinePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme === 'light') {
-            document.body.classList.add('light-mode');
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
+        // ---------- Fotos: monta as camadas do duotone ----------
+        // Fora daqui ficam de propósito o QR Code (precisa ser escaneável) e os logos.
+        document.querySelectorAll('.case-img-wrapper img, .memory-img, .cert-card img').forEach(img => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'fx-photo';
+            img.replaceWith(wrapper);
+
+            const border = document.createElement('div');
+            border.className = 'fx-photo__border';
+            wrapper.append(img, border);
+        });
+
+        document.querySelectorAll('.fx-cutout').forEach(cutout => {
+            const base = cutout.querySelector('img');
+            const duo = base.cloneNode();
+            base.classList.add('fx-cutout__base');
+            duo.classList.add('fx-cutout__duo');
+            duo.alt = '';
+            duo.setAttribute('aria-hidden', 'true');
+            base.after(duo);
+        });
+
+        // Sem hover no toque: revela a foto quando ela cruza o centro da tela
+        if (isTouch) {
+            const touchObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => entry.target.classList.toggle('is-active', entry.isIntersecting));
+            }, { rootMargin: '-35% 0px -35% 0px' });
+            document.querySelectorAll('.fx-photo, .fx-cutout').forEach(el => touchObserver.observe(el));
         }
 
-        themeToggleBtn.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            
-            if (document.body.classList.contains('light-mode')) {
-                themeIcon.classList.replace('fa-moon', 'fa-sun');
-                localStorage.setItem('theme', 'light');
+        // ---------- Scroll reveal ----------
+        const REVEAL_SELECTOR = [
+            '.hero-left', '.hero-right', '.hero-bottom-info', '.editorial-divider',
+            '.about-left > *', '.about-right > *:not(.resume-grid)', '.resume-section-title',
+            '.resume-item', '.skills-editorial-cloud', '.overlapping-title-container',
+            '.case-card-ed', '.cert-card'
+        ].join(',');
+        const REVEAL_DURATION = 800;
+
+        function startReveals() {
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    const index = [...el.parentElement.children].indexOf(el);
+                    const delay = Math.min(index, 6) * 70;
+                    el.style.setProperty('--reveal-delay', `${delay}ms`);
+                    el.classList.add('is-visible');
+                    obs.unobserve(el);
+                    // Limpa ao terminar, devolvendo ao elemento as transições de hover dele
+                    setTimeout(() => {
+                        el.classList.remove('reveal', 'is-visible');
+                        el.style.removeProperty('--reveal-delay');
+                    }, delay + REVEAL_DURATION + 50);
+                });
+            }, { rootMargin: '0px 0px -8% 0px' });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        if (!prefersReducedMotion) {
+            document.querySelectorAll(REVEAL_SELECTOR).forEach(el => el.classList.add('reveal'));
+
+            if (document.documentElement.classList.contains('is-loading')) {
+                // Começa no meio da saída da splash, para a entrada do hero ser vista
+                document.addEventListener('splash:exit', () => setTimeout(startReveals, 450), { once: true });
             } else {
-                themeIcon.classList.replace('fa-sun', 'fa-moon');
-                localStorage.setItem('theme', 'dark');
+                startReveals();
             }
-        });
+        }
+
+        // ---------- Micro-interações de ponteiro (só com mouse) ----------
+        // As escritas ficam em requestAnimationFrame para no máximo uma por frame.
+        function onPointerFrame(el, handler) {
+            let frame = null;
+            let lastEvent = null;
+            el.addEventListener('pointermove', event => {
+                lastEvent = event;
+                frame ??= requestAnimationFrame(() => {
+                    frame = null;
+                    handler(lastEvent, el.getBoundingClientRect());
+                });
+            });
+        }
+
+        if (hasFinePointer && !prefersReducedMotion) {
+            // Botões magnéticos
+            const MAGNET_STRENGTH = 0.3;
+            document.querySelectorAll('.case-links-sm a, .footer-social-icons a').forEach(el => {
+                onPointerFrame(el, (event, rect) => {
+                    const x = event.clientX - (rect.left + rect.width / 2);
+                    const y = event.clientY - (rect.top + rect.height / 2);
+                    el.style.setProperty('--mx', `${x * MAGNET_STRENGTH}px`);
+                    el.style.setProperty('--my', `${y * MAGNET_STRENGTH}px`);
+                });
+                el.addEventListener('pointerleave', () => {
+                    el.style.removeProperty('--mx');
+                    el.style.removeProperty('--my');
+                });
+            });
+
+            // Gradiente dos cards seguindo o cursor
+            document.querySelectorAll('.case-card-ed').forEach(card => {
+                onPointerFrame(card, (event, rect) => {
+                    card.style.setProperty('--px', `${event.clientX - rect.left}px`);
+                    card.style.setProperty('--py', `${event.clientY - rect.top}px`);
+                });
+            });
+        }
     </script>
 </body>
 </html>
